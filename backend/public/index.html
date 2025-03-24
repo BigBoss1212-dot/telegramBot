@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enter Details</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        input, button { width: 100%; margin: 10px 0; padding: 10px; }
+    </style>
+</head>
+<body>
+    <h2>Enter Your Details</h2>
+    <input type="text" id="firstName" placeholder="First Name" required>
+    <input type="text" id="lastName" placeholder="Last Name" required>
+    <input type="email" id="email" placeholder="Email" required>
+    <button onclick="submitForm()">Submit</button>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+
+        function submitForm() {
+            const chatId = tg.initDataUnsafe.user.id;
+            const firstName = document.getElementById("firstName").value;
+            const lastName = document.getElementById("lastName").value;
+            const email = document.getElementById("email").value;
+
+            if (!firstName || !lastName || !email) {
+                alert("All fields are required!");
+                return;
+            }
+
+            fetch("http://localhost:3000/submit", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ chatId, firstName, lastName, email })
+            }).then(response => response.json())
+              .then(data => { if (data.success) tg.close(); });
+        }
+    </script>
+</body>
+</html>
